@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  login     String   @unique @db.VarChar(100)
+  password  String
+  wallets   Wallet[]
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String?
+  userId    String
+  address   String   @unique @db.VarChar(100)
+  privateKey String @db.VarChar(512)
+  balance   Int  @default(0)
+  transactions Transaction[]
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  wallet     Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId   String
+  txid       String   @db.VarChar(100)
+  amount     Int
+  fee        Int  @default(0)
+  direction  Direction
+  fromAddress String?
+  toAddress   String?
+  status     Status
+  createdAt  DateTime @default(now())
+  confirmedAt DateTime?
+
+  @@id([walletId, txid])
+}
+
+
+model BlockchainEvent {
+  id         String   @id @default(uuid())
+  txid       String   @db.VarChar(100)
+  eventType  String   @db.VarChar(50)
+  payload    Json
+  processed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+enum Direction {
+  IN
+  OUT
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  FAILED
+}
