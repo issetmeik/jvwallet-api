@@ -132,7 +132,7 @@ export class WalletService {
 
     if (!validate(toAddress, this.network.name as Network)) {
       throw new HttpException(
-        'Invalid Bitcoin address.',
+        'Endereço de bitcoin inválido.',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -145,7 +145,10 @@ export class WalletService {
     );
 
     if (!utxos || utxos.length === 0) {
-      throw new HttpException('No founds avaliable', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Sem fundos disponiveis.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const inputs = utxos.length;
@@ -157,7 +160,7 @@ export class WalletService {
     const changeAmount = totalAvailable - (amountSatoshis + fee);
 
     if (changeAmount < 0) {
-      throw new HttpException('Insufficient balance.', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Saldo Insuficiente.', HttpStatus.BAD_REQUEST);
     }
 
     const tx = new Transaction().from(utxos).to(toAddress, amountSatoshis);
