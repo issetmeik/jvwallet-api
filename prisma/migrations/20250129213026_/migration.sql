@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Wallet" ALTER COLUMN "privateKey" SET DATA TYPE VARCHAR(512);
